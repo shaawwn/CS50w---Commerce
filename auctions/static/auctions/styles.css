@@ -1,0 +1,13 @@
+body {
+    padding: 10px;
+}
+
+/* FORMS */
+
+.form-input {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
