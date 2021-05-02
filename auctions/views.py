@@ -73,6 +73,7 @@ def add_listing(request):
     
     if request.method == 'POST':
         form = ListingForm(request.POST)
+        print("REQUEST: ", type(form), request.POST)
         if form.is_valid():
             title = form.cleaned_date['title']
             description = form.cleaned_data['description']
