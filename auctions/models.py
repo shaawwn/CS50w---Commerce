@@ -27,7 +27,7 @@ class Listing(models.Model):
 class Bid(models.Model):
     """Bids for a listing"""
     listing = models.ForeignKey('Listing', on_delete=models.CASCADE)
-    bid = models.FloatField()
+    bid = models.DecimalField(max_digits=999999, decimal_places=2)
 
 
 class Comment(models.Model):

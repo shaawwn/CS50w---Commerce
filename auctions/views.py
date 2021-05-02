@@ -3,8 +3,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-
-from .models import User, Listing, Bid, Comment
+from .models import User, Listing, Bid, Comment, Category
 from .forms import ListingForm
 
 # ----------------------------- MAIN PAGE --------
@@ -70,20 +69,24 @@ def register(request):
 # ------------ PAGES
 
 def add_listing(request):
-    
+    print("REQUEST:", request.POST)
     if request.method == 'POST':
         form = ListingForm(request.POST)
-        if form.is_valid():
-            title = form.cleaned_date['title']
-            description = form.cleaned_data['description']
-            starting_bid = form.cleaned_data['starting_bid']
-            category = form.cleaned_data['category']
-            # Save as a model
-            listing = Listing.objects.create(title, description, starting_bid, category)
-            listing.save()
+        # Save as a model
 
-            return HttpResponseRedirect(reverse('listing', args=[listing.title]))
-
+        category = Category.objects.filter(cat_type=request.POST['category'])
+        if len(category) == 0:
+            category = Category(cat_type=request.POST['category'])
+            category.save()
+            category = Category.objects.filter(cat_type=request.POST['category'])
+        # listing = Listing.objects.create(title=request.POST['title'], description=request.POST['description'], starting_bid=request.POST['starting_bid'], category=request.POST['category'])
+        listing = Listing(title=request.POST['title'], description=request.POST['description'], starting_bid=request.POST['starting_bid'], seller=request.user)
+        listing.save()
+        bid = Bid(listing=listing, bid=listing.starting_bid)
+        bid.save()
+        listing.category.set(category)
+        return HttpResponseRedirect(reverse('listing', args=[listing.id]))
+        # return render(request, f'auctions/listing/{int(listing.id)}')
     form = ListingForm()
     return render(request, 'auctions/add_listing.html', {
         "form": form
@@ -93,10 +96,14 @@ def add_listing(request):
 def listing(request, listing_id):
 
     listing = Listing.objects.get(id=listing_id)
+    bids = Bid.objects.filter(listing=listing)
 
-
+    print(max(bids).bid)
+    comments = Comment.objects.filter(listing=listing)
     return render(request, 'auctions/listing.html', {
-        "listing": listing
+        "listing": listing,
+        "bids": max(bids),
+        "comments": comments
     })
 
 
