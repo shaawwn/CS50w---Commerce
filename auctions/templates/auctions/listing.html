@@ -4,9 +4,42 @@
 {% endblock %}
 
 {% block body %}
+<div class='container-listing'>
     <h1>{{ listing.title }}</h1>
 
-    <p>{{ listing.description }}</p>
+    <div class='listing-description'>
+        <p>{{ listing.description }}</p>
+    </div>
+
+    <div class='listing-image'>
+        <h2>Image here</h2>
+    </div>
+
+    <div class='listing-bid'>
+        <p>Current bid: ${{ bids.bid }}</p>
+    </div>
+
+    <div class="listing-comments">
+        <ul>
+            <h4>Comments for this listing</h4>
+                <div>
+                    <form class='listing-comment-form'>
+                        <textarea rows="5" cols="20"></textarea>
+                        <input type="submit" class='listing-comment-btn'>
+                    </form>
+                </div>
+
+                {% for comment in comments %}
+                    <div class="listing-comment">
+                        <li>{{ comment }}</li>
+                    </div>
+                {% empty %}
+                    <p>There are no comments yet!</p>
+                {% endfor %}
+                
+        </ul>
+    </div>
+</div>
 {% endblock %}
 
 {% block script %}
