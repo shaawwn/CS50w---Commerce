@@ -22,6 +22,8 @@ class Listing(models.Model):
     seller = models.ForeignKey('User', default=None, on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now=True)
     image = models.ImageField(blank=True, null=True, upload_to="images/")
+    open = models.BooleanField(default=True)
+    top_bidder = models.ManyToManyField(User, blank=True, default=None, related_name="top_bidder")
     
 
 class Bid(models.Model):

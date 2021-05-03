@@ -16,11 +16,51 @@ body {
 
 .container-listing {
     border: 2px solid black;
-    width: 75%;
+    /* width: 75%; */
+    margin: auto;
+    width: 450px;
+    background-color: rgb(192, 192, 255);
+    border-radius: 10px;
+    padding: 25px;
 }
 
+.listing-header {
+    position: relative;
+    text-align: left;
+    display: flex;
+    padding: 0px;
+    margin: 0px;;
+}
+
+.watch-btn {
+    position: absolute;
+    right: 0px;
+    top: 10px;
+    background-color: rgb(106, 106, 255);
+    color: white;
+    height: 30px;
+    /* width: 45px; */
+    font-size: 12px;
+    text-align: center;
+    border: 1px solid black;
+}
+
+.listing-close-btn {
+    position: absolute;
+    right: 0px;
+    top: 10px;
+    background-color: rgb(253, 104, 45);
+    color: white;
+    height: 30px;
+    /* width: 45px; */
+    font-size: 12px;
+    text-align: center;
+    border: 1px solid black;
+}
 .listing-description {
-    border: 2px solid black;
+    border: 1px solid black;
+    background-color:rgb(235, 235, 255);
+    padding: 5px;
 }
 
 .listing-comments {
@@ -32,19 +72,64 @@ body {
 }
 
 .listing-bid {
-    border: 1px solid black;
+    display: flex;
+    position: relative;
+    /* border: 1px solid black; */
+    border-top: None;
+    margin: auto;
+    margin-top: None;
+    margin-bottom: 5px;
+    background-color:rgb(235, 235, 255);
+    text-align: center;
+    padding: 5px;
+}
+
+.listing-current-bid {
+    margin-top: 10px;
+    margin-bottom: None;
+    background-color: rgb(235, 235, 255);
+    /* border: 1px solid black; */
+    border-bottom: None;
+    margin-bottom: None;
+}
+
+.bidding-form {
+    background-color:rgb(235, 235, 255);
+    /* border-left: 1px solid black; */
+}
+
+.listing-bid-btn {
+    position: absolute;
+    right: 50px;
+    top: 6px;
+    border-radius: 5px;
+    border:1px solid black;
+    background-color: rgb(106, 106, 255);
+    color: white;
 }
 
 .listing-comment-form {
     display: flex;
     flex-direction: column;
+    position: relative;
     margin-right: 30px;
 }
 
 .listing-comment-btn {
     width: 120px;
-    background-color: rgb(51, 51, 245);
+    background-color: rgb(106, 106, 255);
     color: white;
     border-radius: 5px;
     justify-content: flex-end;
+    border: 1px solid black;
+    margin-top: 5px;
+}
+
+.listing-image {
+    max-width: 400px;
+    max-height: 300px;
+    width: auto;
+    height: auto;
+    margin: auto;
+    border: none;
 }

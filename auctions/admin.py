@@ -3,3 +3,4 @@ from .models import Listing, User, Comment, Bid, Category
 # Register your models here.
 admin.site.register(Listing)
 admin.site.register(Category)
+admin.site.register(Bid)

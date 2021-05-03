@@ -4,19 +4,42 @@
 {% endblock %}
 
 {% block body %}
+
+{% if message %}
+
+    <div class='alert' style="background-image: red">
+        <h1>{{ message }}</h1>
+    </div>
+
+{% endif %}
 <div class='container-listing'>
-    <h1>{{ listing.title }}</h1>
+    <div class=listing-header>
+        <h1 style="margin-left: 20px;">{{ listing.title }}</h1>
 
-    <div class='listing-description'>
-        <p>{{ listing.description }}</p>
+        {% if listing.seller == request.user %}
+            <button class='listing-close-btn'>Close Listing</button>
+        {% else %}
+            <button class='watch-btn'>Watch</button>
+        {% endif %}
     </div>
-
     <div class='listing-image'>
-        <h2>Image here</h2>
+        {% if listing.image %}
+            <img class="listing-image" src="/media/{{ listing.image }}">
+        {% else %}
+            <h4>No image for listing</h4>
+        {% endif %}
     </div>
-
-    <div class='listing-bid'>
-        <p>Current bid: ${{ bids.bid }}</p>
+    <form class="bidding-form" action="{% url 'place_bid' listing.id %}" method="post">
+        <h4 class="listing-current-bid">Current bid: ${{ bid }}</h4>
+        <div class='listing-bid'>
+            {% csrf_token %}
+            <input type="number" name="bid">
+            <input class='listing-bid-btn' type="submit" value="Place Bid">
+        </div>
+    </form>
+    <div class='listing-description'>
+        <h6>{{ listing.title }}</h6>
+        <p>{{ listing.description }}</p>
     </div>
 
     <div class="listing-comments">

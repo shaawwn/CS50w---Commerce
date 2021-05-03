@@ -5,11 +5,12 @@ from django.shortcuts import render
 from django.urls import reverse
 from .models import User, Listing, Bid, Comment, Category
 from .forms import ListingForm
+from django.contrib import messages
+
 
 # ----------------------------- MAIN PAGE --------
 def index(request):
-
-    listings = Listing.objects.all()
+    listings = Listing.objects.filter(open=True)
     return render(request, "auctions/index.html", {
         "listings": listings
     })
@@ -69,7 +70,7 @@ def register(request):
 # ------------ PAGES
 
 def add_listing(request):
-    print("REQUEST:", request.POST)
+    print("REQUEST:", request.POST, request.FILES)
     if request.method == 'POST':
         form = ListingForm(request.POST)
         category = Category.objects.filter(cat_type=request.POST['category'])
@@ -78,7 +79,7 @@ def add_listing(request):
             category.save()
             category = Category.objects.filter(cat_type=request.POST['category'])
         # listing = Listing.objects.create(title=request.POST['title'], description=request.POST['description'], starting_bid=request.POST['starting_bid'], category=request.POST['category'])
-        listing = Listing(title=request.POST['title'], description=request.POST['description'], starting_bid=request.POST['starting_bid'], seller=request.user)
+        listing = Listing(title=request.POST['title'], description=request.POST['description'], starting_bid=request.POST['starting_bid'], image=request.FILES['image'], seller=request.user)
         listing.save()
         bid = Bid(listing=listing, bid=listing.starting_bid)
         bid.save()
@@ -93,22 +94,57 @@ def add_listing(request):
 
 
 def listing(request, listing_id):
-
+    """Display listing item"""
     listing = Listing.objects.get(id=listing_id)
     bids = Bid.objects.filter(listing=listing)
 
-    print(max(bids).bid)
+
     comments = Comment.objects.filter(listing=listing)
     return render(request, 'auctions/listing.html', {
         "listing": listing,
-        "bids": max(bids),
+        "bid": max([bid.bid for bid in bids]),
         "comments": comments
     })
 
 
+def close_listing(request, listing_id):
+    """Allow a seller to close a listing"""
+
+    listing = Listing.objects.get(id=listing_id)
+    listing.open = False
+    listing.save()
+
+    pass
+
 def watchlist(request):
     
     return render(request, 'auctions/watchlist.html')
+
+def place_bid(request, listing_id):
+    """Users may place a bid on an item"""
+
+    user = User.objects.filter(username=request.user)
+    if request.method == 'POST':
+        listing = Listing.objects.get(id=listing_id)
+        bids = Bid.objects.filter(listing=listing)
+        max_bid = max([bid.bid for bid in bids])
+
+        if float(request.POST['bid']) <= max_bid:
+            message = "Your bid must be higher than current bid"
+            # return HttpResponse("Your bid must be higher than the current bid")
+            return HttpResponseRedirect(reverse('listing', args=[listing_id]))
+
+        
+        new_bid = Bid(listing=listing, bid=request.POST['bid'])
+
+        new_bid.save()
+        listing.top_bidder.set(user)
+        listing.save()
+
+
+    return HttpResponseRedirect(reverse('listing', args=[listing_id]))
+
+
 
 
 def categories(request):
