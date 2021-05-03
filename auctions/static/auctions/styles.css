@@ -1,5 +1,6 @@
 body {
     padding: 10px;
+    background-color: rgb(223, 255, 172)
 }
 
 /* FORMS */
@@ -16,9 +17,9 @@ body {
 
 .container-listing {
     border: 2px solid black;
-    /* width: 75%; */
+    position: relative;
     margin: auto;
-    width: 450px;
+    width: 550px;
     background-color: rgb(192, 192, 255);
     border-radius: 10px;
     padding: 25px;
@@ -34,7 +35,7 @@ body {
 
 .watch-btn {
     position: absolute;
-    right: 0px;
+    right: 10px;
     top: 10px;
     background-color: rgb(106, 106, 255);
     color: white;
@@ -47,7 +48,7 @@ body {
 
 .listing-close-btn {
     position: absolute;
-    right: 0px;
+    right: 10px;
     top: 10px;
     background-color: rgb(253, 104, 45);
     color: white;
@@ -93,6 +94,17 @@ body {
     margin-bottom: None;
 }
 
+.listing-current-bidder {
+    position: absolute;
+    right: 10px;
+    top:10px;
+}
+
+.current-bid {
+    display: flex;
+    position: relative;
+}
+
 .bidding-form {
     background-color:rgb(235, 235, 255);
     /* border-left: 1px solid black; */
@@ -106,6 +118,22 @@ body {
     border:1px solid black;
     background-color: rgb(106, 106, 255);
     color: white;
+}
+
+.bid-warning {
+    background-color: red;
+    color: white;
+    margin-top: 3px;
+    margin-bottom: 3px;
+    border-radius: 5px;
+}
+
+.bid-success {
+    background-color: green;
+    color: white;
+    margin-top:3px;
+    margin-bottom: 3px;
+    border-radius: 5px;
 }
 
 .listing-comment-form {

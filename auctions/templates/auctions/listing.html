@@ -3,6 +3,7 @@
 {% block title %}
 {% endblock %}
 
+
 {% block body %}
 
 {% if message %}
@@ -13,14 +14,19 @@
 
 {% endif %}
 <div class='container-listing'>
+    {% if listing.seller == request.user and listing.open == True %}
+        <form action="{% url 'close_listing' listing.id %}" method="post">
+            {% csrf_token %}
+            <input class="listing-close-btn" type="submit" value="Close Listing">
+            <!-- <button class='listing-close-btn'>Close Listing</button>     -->
+        </form>
+    {% elif not listing.seller == request.user and listing.open == True %}
+        <form>
+            <button class='watch-btn'>Watch</button>    
+        </form>
+    {% endif %}
     <div class=listing-header>
         <h1 style="margin-left: 20px;">{{ listing.title }}</h1>
-
-        {% if listing.seller == request.user %}
-            <button class='listing-close-btn'>Close Listing</button>
-        {% else %}
-            <button class='watch-btn'>Watch</button>
-        {% endif %}
     </div>
     <div class='listing-image'>
         {% if listing.image %}
@@ -29,13 +35,36 @@
             <h4>No image for listing</h4>
         {% endif %}
     </div>
-    <form class="bidding-form" action="{% url 'place_bid' listing.id %}" method="post">
-        <h4 class="listing-current-bid">Current bid: ${{ bid }}</h4>
-        <div class='listing-bid'>
-            {% csrf_token %}
-            <input type="number" name="bid">
-            <input class='listing-bid-btn' type="submit" value="Place Bid">
-        </div>
+    {% if listing.open == True %}
+        <form class="bidding-form" action="{% url 'place_bid' listing.id %}" method="post">
+            <div class='current-bid'>
+                <h4 class="listing-current-bid">Current bid: $</h4>
+                <h4 class="listing-current-bid">{{ bidder.bid }}</h4>     
+                <p class="listing-current-bidder">Bidder: {{ bidder.bidder }}</p>       
+            </div>
+
+
+            <div class='listing-bid'>
+                {% csrf_token %}
+                <input type="number" name="bid">
+                <input class='listing-bid-btn' type="submit" value="Place Bid">
+            </div>
+            {% if messages %}
+                {% for message in messages %}
+                    {% if message.level == DEFAULT_MESSAGE_LEVELS.ERROR  %}
+                        <div class="bid-warning">{{ message }}</div>
+                    {% else %}
+                        <div class="bid-success">{{ message }}</div>
+                    {% endif %}
+                {% endfor %}
+            {% endif %}
+        {% else %}
+            <div class="current-bid">
+                <h4 class="listing-current-bid">Winning bid: $</h4>
+                <h4 class="listing-current-bid">{{ bidder.bid }}</h4>     
+                <p class="listing-current-bidder">Bidder: {{ bidder.bidder }}</p>       
+            </div>
+        {% endif %}
     </form>
     <div class='listing-description'>
         <h6>{{ listing.title }}</h6>
@@ -66,4 +95,36 @@
 {% endblock %}
 
 {% block script %}
+
+
+    <script>
+
+
+        // if (document.readyState == 'loading') {
+        //     document.addEventListener('DOMContentLoaded', ready)
+        // } else {
+        //     ready()
+        // }
+        
+        // function ready() {
+        //     console.log("Ready function")
+        //     let bid_button = document.getElementsByClassName('listing-bid-btn')[0]
+        //     // let current_bid = document.getElementsByClassName('listing-current-bid')[1]
+        //     let bidd = document.getElementsByName('bid')
+        //     console.log("BID:", bidd)
+        //     bid_button.onclick = check_bid
+        
+        // }
+
+        // function check_bid() {
+        //     let bid = document.getElementsByName('bid').value
+        //     let current_bid = document.getElementsByClassName('listing-current-bid')[1]
+        //     console.log("Checking bid", bid)
+        //     if (bid.value < current_bid) {
+        //         alert("You must enter a bid that is higher than current bid.")
+        //         return 0;
+        //     }
+        // }
+
+    </script>
 {% endblock %}

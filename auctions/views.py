@@ -81,7 +81,7 @@ def add_listing(request):
         # listing = Listing.objects.create(title=request.POST['title'], description=request.POST['description'], starting_bid=request.POST['starting_bid'], category=request.POST['category'])
         listing = Listing(title=request.POST['title'], description=request.POST['description'], starting_bid=request.POST['starting_bid'], image=request.FILES['image'], seller=request.user)
         listing.save()
-        bid = Bid(listing=listing, bid=listing.starting_bid)
+        bid = Bid(listing=listing, bid=listing.starting_bid, bidder=request.user)
         bid.save()
         listing.category.set(category)
         return HttpResponseRedirect(reverse('listing', args=[listing.id]))
@@ -98,23 +98,28 @@ def listing(request, listing_id):
     listing = Listing.objects.get(id=listing_id)
     bids = Bid.objects.filter(listing=listing)
 
-
+    # print(bids)
     comments = Comment.objects.filter(listing=listing)
     return render(request, 'auctions/listing.html', {
         "listing": listing,
         "bid": max([bid.bid for bid in bids]),
+        "bidder": Bid.objects.get(bid=max([bid.bid for bid in bids])),
         "comments": comments
     })
 
 
 def close_listing(request, listing_id):
     """Allow a seller to close a listing"""
+    # Listing should display who the winner is
 
-    listing = Listing.objects.get(id=listing_id)
-    listing.open = False
-    listing.save()
+    if request.method == 'POST':
+        listing = Listing.objects.get(id=listing_id)
+        # bid = Bid.objects.get(listing=listing)
+        listing.open = False
+        listing.save()
 
-    pass
+    return HttpResponseRedirect(reverse('listing', args=[listing_id]))
+
 
 def watchlist(request):
     
@@ -129,19 +134,22 @@ def place_bid(request, listing_id):
         bids = Bid.objects.filter(listing=listing)
         max_bid = max([bid.bid for bid in bids])
 
-        if float(request.POST['bid']) <= max_bid:
-            message = "Your bid must be higher than current bid"
-            # return HttpResponse("Your bid must be higher than the current bid")
+        try:
+            if float(request.POST['bid']) <= max_bid:
+                messages.error(request, "Your bid must be higher than current bid")
+                return HttpResponseRedirect(reverse('listing', args=[listing_id]))
+
+        except ValueError:
+            messages.error(request, "You must enter a bid")
             return HttpResponseRedirect(reverse('listing', args=[listing_id]))
 
-        
-        new_bid = Bid(listing=listing, bid=request.POST['bid'])
+        new_bid = Bid(listing=listing, bid=request.POST['bid'], bidder=request.user)
 
         new_bid.save()
         listing.top_bidder.set(user)
         listing.save()
 
-
+    messages.info(request, "Bid placed sucessfully!")
     return HttpResponseRedirect(reverse('listing', args=[listing_id]))
 
 

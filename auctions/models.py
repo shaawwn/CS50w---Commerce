@@ -24,12 +24,13 @@ class Listing(models.Model):
     image = models.ImageField(blank=True, null=True, upload_to="images/")
     open = models.BooleanField(default=True)
     top_bidder = models.ManyToManyField(User, blank=True, default=None, related_name="top_bidder")
-    
+    # watchlist = models.ManyToManyField(User, blank=True, default=None, related_name="watching")
 
 class Bid(models.Model):
     """Bids for a listing"""
     listing = models.ForeignKey('Listing', on_delete=models.CASCADE)
     bid = models.DecimalField(max_digits=999999, decimal_places=2)
+    bidder = models.ForeignKey('User', default=None, on_delete=models.CASCADE) # Bid is returning the multiple bids for same lsiting, maybe because not M2M?
 
 
 class Comment(models.Model):
