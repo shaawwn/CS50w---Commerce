@@ -13,6 +13,30 @@ body {
     margin-bottom: 10px;
 }
 
+/* Active listing */
+
+#container-active-listings {
+    display: flex;    
+}
+
+.container-active-listing-item {
+    display: flex;
+    flex-direction: column;
+    width: 150px;
+    height: 200px;
+    background-color:rgb(192, 192, 255);
+    text-align: center;
+    border-radius: 5px;
+}
+
+.active-listing-image {
+    max-width: 120px;
+    max-height: 120px;
+    width: auto;
+    height: auto;
+    margin: auto;
+    border: none;
+}
 /* Listing page */
 
 .container-listing {
@@ -136,6 +160,11 @@ body {
     border-radius: 5px;
 }
 
+.auction-won {
+    background-color: green;
+    color:white;
+    border-radius: 5px;
+}
 .listing-comment-form {
     display: flex;
     flex-direction: column;
@@ -161,3 +190,4 @@ body {
     margin: auto;
     border: none;
 }
+

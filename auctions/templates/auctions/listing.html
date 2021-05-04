@@ -21,9 +21,18 @@
             <!-- <button class='listing-close-btn'>Close Listing</button>     -->
         </form>
     {% elif not listing.seller == request.user and listing.open == True %}
-        <form>
-            <button class='watch-btn'>Watch</button>    
-        </form>
+
+        {% if watching == True %}
+            <form action="{% url 'remove_from_watchlist' listing.id %}" method="post">
+                {% csrf_token %}
+                <button class='watch-btn'>Unwatch</button>    
+            </form>
+        {% else %}
+            <form action="{% url 'add_to_watchlist' listing.id %}" method="post">
+                {% csrf_token %}
+                <button class='watch-btn'>Watch</button>    
+            </form>
+        {% endif %}
     {% endif %}
     <div class=listing-header>
         <h1 style="margin-left: 20px;">{{ listing.title }}</h1>
@@ -38,9 +47,9 @@
     {% if listing.open == True %}
         <form class="bidding-form" action="{% url 'place_bid' listing.id %}" method="post">
             <div class='current-bid'>
-                <h4 class="listing-current-bid">Current bid: $</h4>
-                <h4 class="listing-current-bid">{{ bidder.bid }}</h4>     
-                <p class="listing-current-bidder">Bidder: {{ bidder.bidder }}</p>       
+                <h4 class="listing-current-bid">Current bid: ${{ bid.bid }}</h4>
+                <!-- <h4 class="listing-current-bid">{{ bidder.bid }}</h4>      -->
+                <p class="listing-current-bidder">Bidder: {{ bid.bidder }}</p>       
             </div>
 
 
@@ -59,10 +68,14 @@
                 {% endfor %}
             {% endif %}
         {% else %}
+            {% for message in messages %}
+                {% if message.level == DEFAULT_MESSAGE_LEVELS.INFO and bid.bidder == request.user %}
+                    <div class="auction-won">{{ message }}</div>
+                {% endif %}
+            {% endfor %}
             <div class="current-bid">
-                <h4 class="listing-current-bid">Winning bid: $</h4>
-                <h4 class="listing-current-bid">{{ bidder.bid }}</h4>     
-                <p class="listing-current-bidder">Bidder: {{ bidder.bidder }}</p>       
+                <h4 class="listing-current-bid">Winning bid: ${{ bid.bid }}</h4>
+                <p class="listing-current-bidder">Bidder: {{ bid.bidder }}</p>       
             </div>
         {% endif %}
     </form>

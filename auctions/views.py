@@ -3,9 +3,10 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from .models import User, Listing, Bid, Comment, Category
+from .models import User, Listing, Bid, Comment, Category, WatchList
 from .forms import ListingForm
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 
 # ----------------------------- MAIN PAGE --------
@@ -97,14 +98,28 @@ def listing(request, listing_id):
     """Display listing item"""
     listing = Listing.objects.get(id=listing_id)
     bids = Bid.objects.filter(listing=listing)
+    user = User.objects.get(username=request.user)
+    watchlist = WatchList.objects.filter(watching=user)
+    watching = False
 
-    # print(bids)
+    for item in watchlist:
+        if item.listing == listing:
+            watching = True
+
+
+    for bid in bids:
+        if bid.bid == max([bid.bid for bid in bids]):
+            max_bid = bid
     comments = Comment.objects.filter(listing=listing)
+
+    if listing.open == False:
+        messages.info(request, "You won the auction!")
+
     return render(request, 'auctions/listing.html', {
         "listing": listing,
-        "bid": max([bid.bid for bid in bids]),
-        "bidder": Bid.objects.get(bid=max([bid.bid for bid in bids])),
-        "comments": comments
+        "bid": max_bid,
+        "comments": comments,
+        "watching": watching
     })
 
 
@@ -120,10 +135,49 @@ def close_listing(request, listing_id):
 
     return HttpResponseRedirect(reverse('listing', args=[listing_id]))
 
-
+@login_required(login_url='login')
 def watchlist(request):
+
+    # Get all the listings that a user is watching
+    user = User.objects.get(username=request.user)
+    watchlist = WatchList.objects.filter(watching=user)
+    return render(request, 'auctions/watchlist.html', {
+        "watchlist": watchlist
+    })
+
+def add_to_watchlist(request, listing_id):
+    """Add a listing to current user's watchlist"""
+
+    if request.method == 'POST':
+        listing = Listing.objects.get(id=listing_id)
+        user = User.objects.get(username=request.user)
+        to_watch = WatchList(listing=listing)
+        try:
+            to_watch = WatchList.objects.get(listing=listing)
+        except:
+            to_watch = WatchList(listing=listing)
+            to_watch.save()
+
+        to_watch.watching.add(user)
+        to_watch.save()
+
+    return HttpResponseRedirect(reverse('listing', args=[listing_id]))
+
+
+def remove_from_watchlist(request, listing_id):
+    """Allow users to remove an item from their watchlist"""
+    if request.method == 'POST':
+        listing = Listing.objects.get(id=listing_id)
+        user = User.objects.get(username=request.user)
+        to_unwatch = WatchList.objects.get(listing=listing)
+
+        to_unwatch.watching.remove(user)
+        to_unwatch.save()
+
+    return HttpResponseRedirect(reverse('listing', args=[listing_id]))
+
     
-    return render(request, 'auctions/watchlist.html')
+
 
 def place_bid(request, listing_id):
     """Users may place a bid on an item"""

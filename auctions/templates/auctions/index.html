@@ -2,9 +2,14 @@
 
 {% block body %}
     <ul><h2>Active Listings</h2></ul>
-
+    <div id="container-active-listings">
     {% for listing in listings %}
-        <a href="/listing/{{ listing.id }}"><li>{{ listing.title }}</li></a>
+        <a href="/listing/{{ listing.id }}"><div class="container-active-listing-item">
+            <p>{{ listing.title }}</p>
+            <img class="active-listing-image" src="/media/{{ listing.image }}">
+        </div>
+        </a>
+        <!-- <a href="/listing/{{ listing.id }}"><li>{{ listing.title }}</li></a> -->
     {% endfor %}
-
+    </div>
 {% endblock %}

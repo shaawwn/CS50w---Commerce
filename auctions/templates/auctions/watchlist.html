@@ -4,7 +4,13 @@
 {% endblock %}
 
 {% block body %}
-    <h1>User Watchlist</h1>
+    <h1>{{ request.user }}'s Watchlist</h1>
+
+    <ul>
+        {% for item in watchlist %}
+        <a href="{% url 'listing' item.listing.id %}"><li>{{ item.listing.title }}</li></a>
+        {% endfor %}
+    </ul>
 {% endblock %}
 
 {% block script %}

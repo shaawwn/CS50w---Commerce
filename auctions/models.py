@@ -39,4 +39,13 @@ class Comment(models.Model):
     comment = models.TextField(max_length=160)
 
 
+class WatchList(models.Model):
+    """Watchlist for a user"""
+    '''
+    A listing and a user relational table, user --> listing (watching)
+    As such, Listing and User are both M2M
+    '''
+    listing = models.ForeignKey('Listing', default=None, on_delete=models.CASCADE)
+    watching = models.ManyToManyField(User, related_name="watching")
+
 
